@@ -1,0 +1,58 @@
+# Paste in RedisInsight > CLI
+
+HSET help:user:U100 name "Aisha Khan" email "aisha@example.com" phone "+92-300-1111111" joined_at "1696500000"
+SET help:idx:user_email:aisha@example.com U100
+HSET help:user:U101 name "Bilal Ahmed" email "bilal@example.com" phone "+92-300-2222222" joined_at "1696500001"
+SET help:idx:user_email:bilal@example.com U101
+
+HSET help:agent:A201 name "Agent Amna" email "amna@helpdesk.local" load 0
+SADD help:agent:A201:skills returns billing
+HSET help:agent:A202 name "Agent Umar" email "umar@helpdesk.local" load 0
+SADD help:agent:A202:skills technical warranty
+
+HSET help:ticket:T300 user_id U100 subject "Order #1234 not delivered" status open priority 20 created_at 1696501000 assigned_agent "" sla_due_at 1696504600
+ZADD help:queue:priority 20 ticket:T300
+LPUSH help:ticket:T300:log "1696501000: created" "1696501010: user contacted support"
+
+HSET help:ticket:T300 assigned_agent A201
+SADD help:agent:A201:open_tickets ticket:T300
+HINCRBY help:agent:A201 load 1
+RPUSH help:ticket:T300:log "1696501100: assigned to agent:A201"
+
+GET help:idx:user_email:aisha@example.com
+HGETALL help:user:U100
+ZREVRANGE help:queue:priority 0 2 WITHSCORES
+SMEMBERS help:agent:A201:open_tickets
+LRANGE help:ticket:T300:log 0 -1
+
+HSET help:ticket:T300 status in_progress
+RPUSH help:ticket:T300:log "status -> in_progress"
+HSET help:ticket:T300 status on_hold
+RPUSH help:ticket:T300:log "status -> on_hold"
+HSET help:ticket:T300 sla_due_at 1696508200
+RPUSH help:ticket:T300:log "sla_due_at extended"
+
+SREM help:agent:A201:open_tickets ticket:T300
+HINCRBY help:agent:A201 load -1
+HSET help:ticket:T300 assigned_agent A202
+SADD help:agent:A202:open_tickets ticket:T300
+HINCRBY help:agent:A202 load 1
+RPUSH help:ticket:T300:log "reassigned to agent:A202"
+
+HSET help:ticket:T300 subject "Order #1234 delayed (address verified)"
+RPUSH help:ticket:T300:log "subject fixed"
+
+HSET help:ticket:T300 status closed
+ZREM help:queue:priority ticket:T300
+SREM help:agent:A202:open_tickets ticket:T300
+HINCRBY help:agent:A202 load -1
+RPUSH help:ticket:T300:log "closed"
+
+DEL help:ticket:T300
+DEL help:ticket:T300:log
+ZREM help:queue:priority ticket:T300
+
+DEL help:idx:user_email:aisha@example.com
+DEL help:user:U100
+
+# SCAN 0 MATCH help:* COUNT 100
