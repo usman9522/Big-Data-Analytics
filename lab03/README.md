@@ -176,6 +176,6 @@ This project is created for educational purposes as part of university coursewor
 
 ---
 
-**Author**: [Your Name]  
-**Course**: Big Data - Semester 7  
-**Institution**: [Your University]
+**Author**: Usman Ahmad
+**Course**: Big Data Analytics - Semester 7  
+**Institution**: PUCIT, PU
