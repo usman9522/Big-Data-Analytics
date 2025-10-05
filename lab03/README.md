@@ -176,6 +176,6 @@ This project is created for educational purposes as part of university coursewor
 
 ---
 
-**Author**: Usman Ahmad
+**Author**: Usman Ahmad </br>
 **Course**: Big Data Analytics - Semester 7  
 **Institution**: PUCIT, PU
